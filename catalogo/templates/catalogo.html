@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block contenido_dinamico %}
+<div class="flex items-center justify-between mb-6">
+    <h2 class="text-3xl font-bold text-slate-800">Catálogo General</h2>
+    <div class="flex items-center gap-2">
+        {% if perms.catalogo.add_autor or perms.catalogo.change_autor or perms.catalogo.delete_autor %}
+            <a href="{% url 'autores' %}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                ✍️ Autores
+            </a>
+        {% endif %}
+        {% if perms.catalogo.add_categoria or perms.catalogo.change_categoria or perms.catalogo.delete_categoria %}
+            <a href="{% url 'categorias' %}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                🏷️ Categorías
+            </a>
+        {% endif %}
+        <span class="bg-emerald-100 text-emerald-700 text-sm font-semibold px-3 py-1 rounded-full">
+            {{ libros|length }} libro{{ libros|length|pluralize }}
+        </span>
+    </div>
+</div>
+
+{% if libros %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for elemento in libros %}
+            <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition p-6 flex flex-col border border-gray-200">
+                <h3 class="text-xl font-semibold text-slate-800 mb-1">{{ elemento.titulo }}</h3>
+                <p class="text-slate-500 text-sm mb-1">✍️ {{ elemento.autor }}</p>
+                <p class="text-slate-400 text-sm mb-4">📅 {{ elemento.anio }}</p>
+
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for categoria in elemento.categorias.all %}
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-1 rounded-full">{{ categoria.nombre }}</span>
+                    {% empty %}
+                        <span class="text-slate-400 text-xs italic">Sin categorías</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-gray-100 flex gap-2 flex-wrap">
+                    <a href="{% url 'detalle' elemento.id %}" class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                        Ver ficha
+                    </a>
+                    {% if perms.catalogo.change_libro %}
+                        <a href="{% url 'editar' elemento.id %}" class="bg-amber-400 hover:bg-amber-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                            Editar
+                        </a>
+                    {% endif %}
+                    {% if perms.catalogo.delete_libro %}
+                        <a href="{% url 'borrar' elemento.id %}" class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                            Borrar
+                        </a>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="bg-white rounded-lg shadow p-10 text-center border border-gray-200">
+        <p class="text-5xl mb-4">📭</p>
+        <p class="text-xl font-semibold text-slate-700">Todavía no hay libros en el catálogo</p>
+        <a href="{% url 'crear' %}" class="inline-block mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded-lg transition">
+            + Añadir el primer libro
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

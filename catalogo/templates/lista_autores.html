@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block contenido_dinamico %}
+<div class="flex items-center justify-between mb-6">
+    <h2 class="text-3xl font-bold text-slate-800">✍️ Autores</h2>
+    <div class="flex items-center gap-2">
+        {% if perms.catalogo.add_autor %}
+            <a href="{% url 'crear_autor' %}" class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                + Añadir autor
+            </a>
+        {% endif %}
+        <span class="bg-emerald-100 text-emerald-700 text-sm font-semibold px-3 py-1 rounded-full">
+            {{ autores|length }} autor{{ autores|length|pluralize }}
+        </span>
+    </div>
+</div>
+
+{% if autores %}
+    <div class="bg-white rounded-lg shadow divide-y divide-gray-100 border border-gray-200">
+        {% for autor in autores %}
+            <div class="p-4 flex items-center justify-between flex-wrap gap-2">
+                <p class="text-lg font-semibold text-slate-800">✍️ {{ autor.nombre }}</p>
+                <div class="flex gap-2">
+                    {% if perms.catalogo.change_autor %}
+                        <a href="{% url 'editar_autor' autor.id %}" class="bg-amber-400 hover:bg-amber-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                            ✏️ Editar
+                        </a>
+                    {% endif %}
+                    {% if perms.catalogo.delete_autor %}
+                        <a href="{% url 'borrar_autor' autor.id %}" class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                            🗑️ Borrar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="bg-white rounded-lg shadow p-10 text-center border border-gray-200">
+        <p class="text-5xl mb-4">📭</p>
+        <p class="text-xl font-semibold text-slate-700">Todavía no hay autores registrados</p>
+        {% if perms.catalogo.add_autor %}
+            <a href="{% url 'crear_autor' %}" class="inline-block mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded-lg transition">
+                + Añadir el primer autor
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
+
+<div class="mt-6">
+    <a href="{% url 'catalogo' %}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg transition text-sm">
+        ← Volver al catálogo
+    </a>
+</div>
+{% endblock %}
