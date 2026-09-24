@@ -5,12 +5,19 @@ from django.contrib.auth.models import Group, Permission
 from .models import Autor, Categoria, Libro
 from .forms import AutorForm, CategoriaForm, LibroForm, RegistroUsuarioForm
 
+def home(request):
+    if request.user.is_authenticated:
+        return redirect("catalogo")
+    return render(request, "home.html")
+
 # EL LISTADO (READ múltiple del CRUD)
 def vista_catalogo(request):
-    # ORM: Toma todos los libros de la base de datos
-    todos_los_libros = Libro.objects.all()
-    # 'render' une el diccionario de ingredientes Python con el diseño HTML base.
-    return render(request, 'catalogo.html', {'libros': todos_los_libros})
+    if request.user.is_authenticated:
+        # ORM: Toma todos los libros de la base de datos
+        todos_los_libros = Libro.objects.all()
+        # 'render' une el diccionario de ingredientes Python con el diseño HTML base.
+        return render(request, 'catalogo.html', {'libros': todos_los_libros})
+    return redirect("/")
 
 # EL DETALLE (READ individual del CRUD)
 def vista_detalle(request, id_libro):
